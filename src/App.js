@@ -7,7 +7,7 @@ function App() {
   const [displayValue, setDisplayValue] = useState("");
   const [position, setPosition] = useState(0);
   const [inputNumbers, updateInputNumbers] = useState(["",""]);
-  const [previousSign, updateSign] = useState("")
+  const [previousSign, updateCurrentSign] = useState("")
 
   function UpdateDisplayInput(digit){
     if(!overrideDisplay){
@@ -57,6 +57,7 @@ function App() {
     setDisplayValue ("");
     setPosition(0);
     updateInputNumbers(["",""])
+    updateCurrentSign("");
   }
 
   return (
@@ -72,13 +73,14 @@ function App() {
             if(inputNumbers[1] !== ""){
               calculate(previousSign);
               ShowResults();
+              setPosition(0);
             }
           }
           else if(inputNumbers[1] !== "" && sign !== undefined){
             calculate(sign);
             ShowResults()
           };
-          updateSign(sign);
+          updateCurrentSign(sign);
           setOverride(true);
         }}
         onNumberSelected={(digit) => {
