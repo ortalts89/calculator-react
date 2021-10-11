@@ -1,4 +1,6 @@
 import CalculatorButtonsList from "./CalculatorButtonsList";
+import '../style.css';
+
 
 function CalculatorOperatorsList ({onSelected}){
     const signs = ["+", "-", "/", "*", "=", "AC"];

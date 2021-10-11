@@ -1,8 +1,9 @@
+import '../style.css';
 
 function CalculatorDisplay({value = ""}){
     return (
         <label>
-            <input className="disaply" type="text" value={value} readOnly/>
+            <input className="display" type="text" value={value} readOnly/>
         </label>
     );
 }
