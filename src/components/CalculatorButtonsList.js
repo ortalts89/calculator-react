@@ -1,7 +1,6 @@
 import CalculatorButton from "./CalculatorButton";
 
 function CalculatorButtonsList ({onSelected, signs, className}){
-    //const currentOperator = undefined;
     return (
         <div className={className}>
             {

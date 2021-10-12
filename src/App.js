@@ -1,6 +1,6 @@
 import CalculatorBody from "./components/CalculatorBody";
 import CalculatorDisplay from "./components/CalculatorDisplay";
-import {useState} from 'react';
+import {useState, useCallback} from 'react';
 
 function App() {
   const [overrideDisplay, setOverride] = useState(false);
@@ -9,7 +9,7 @@ function App() {
   const [inputNumbers, updateInputNumbers] = useState(["",""]);
   const [previousSign, updateCurrentSign] = useState("")
 
-  function UpdateDisplayInput(digit){
+  const updateDisplayInput = useCallback(function updateDisplayInput(digit){
     if(!overrideDisplay){
       setDisplayValue(displayValue + digit);
     }
@@ -17,20 +17,20 @@ function App() {
       setDisplayValue(digit);
       setOverride(false);
     }
-  }
+  },[displayValue,overrideDisplay]);
 
-  function UpdateCurrentNumber(){
+  const saveCurrentNumber = useCallback(function saveCurrentNumber(){
     let newArr = inputNumbers;
     newArr[position] = displayValue;
     updateInputNumbers(newArr);
     setPosition(1);
-  }
+  }, [inputNumbers, displayValue])
 
-  function ShowResults(){
+  const showResults = useCallback(function showResults(){
     setDisplayValue(inputNumbers[0])
-  }
+  }, [inputNumbers])
 
-  function calculate(sign){
+  const calculate = useCallback(function calculate(sign){
     switch(sign){
         case "+":
             inputNumbers[0] = (+inputNumbers[0] + +inputNumbers[1]).toString();
@@ -50,44 +50,52 @@ function App() {
     let newArr = inputNumbers;
     newArr[1] = "";
     updateInputNumbers(newArr);
-}
+}, [inputNumbers])
 
-  function Clear(){
+  const clear = useCallback(function clear(){
     setOverride(false);
     setDisplayValue ("");
     setPosition(0);
     updateInputNumbers(["",""])
     updateCurrentSign("");
-  }
+  },[])
+
+  const onOperatorSelected = useCallback(
+    (sign) => {
+      saveCurrentNumber();
+      if(sign === "AC"){
+        clear()
+      }
+      else if(sign === "="){
+        if(inputNumbers[1] !== ""){
+          calculate(previousSign);
+          showResults();
+          setPosition(0);
+        }
+      }
+      else if(inputNumbers[1] !== "" && sign !== undefined){
+        calculate(sign);
+        showResults()
+      };
+      updateCurrentSign(sign);
+      setOverride(true);
+    }, [inputNumbers, previousSign]
+  );
+
+  const onNumberSelected = useCallback(
+    (digit) => {
+      if(previousSign === "="){
+        clear();
+      }
+      updateDisplayInput(digit)}
+  );
 
   return (
     <div className="calculator">
       <CalculatorDisplay value={displayValue}/>
       <CalculatorBody 
-        onOperatorSelected={(sign) => {
-          UpdateCurrentNumber();
-          if(sign === "AC"){
-            Clear()
-          }
-          else if(sign === "="){
-            if(inputNumbers[1] !== ""){
-              calculate(previousSign);
-              ShowResults();
-              setPosition(0);
-            }
-          }
-          else if(inputNumbers[1] !== "" && sign !== undefined){
-            calculate(sign);
-            ShowResults()
-          };
-          updateCurrentSign(sign);
-          setOverride(true);
-        }}
-        onNumberSelected={(digit) => {
-          if(previousSign === "="){
-            Clear();
-          }
-          UpdateDisplayInput(digit)}}
+        onOperatorSelected={onOperatorSelected}
+        onNumberSelected={onNumberSelected}
        />
     </div>
   );
